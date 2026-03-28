@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, ScrollView } from 'react-native';
 import GoalItem from './components/GoalItem';
 import GoalInput from './components/GoalInput';
+import CustomHeader from './components/CustomHeader'; // ILO2: New Custom Component
 
 export default function App() {
   const [courseGoals, setCourseGoals] = useState([]);
 
-  // This now expects to receive the text from the GoalInput component
   function addGoalHandler(enteredGoalText) {
     if (enteredGoalText.trim().length === 0) {
       return;
     }
-
     setCourseGoals((currentCourseGoals) => [
       ...currentCourseGoals,
       { text: enteredGoalText, key: Math.random().toString() },
@@ -21,15 +20,14 @@ export default function App() {
   return (
     <View style={styles.appContainer}>
       
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>CPE025B Goal Tracker</Text>
-      </View>
+      {/* ILO2: Using the new custom component */}
+      <CustomHeader title="CPE025B Tracker" />
 
-      {/* Passing the addGoalHandler down as a prop called onAddGoal */}
       <GoalInput onAddGoal={addGoalHandler} />
 
-      <View style={styles.goalsContainer}>
-        <Text style={styles.listHeader}>My Goals:</Text>
+      {/* ILO1: FlatList Demonstration with limited container size */}
+      <Text style={styles.sectionTitle}>Optimized (FlatList):</Text>
+      <View style={styles.limitedContainer}>
         <FlatList
           data={courseGoals}
           renderItem={(itemData) => {
@@ -37,6 +35,16 @@ export default function App() {
           }}
           alwaysBounceVertical={false}
         />
+      </View>
+
+      {/* ILO1: ScrollView Demonstration with limited container size */}
+      <Text style={styles.sectionTitle}>Unoptimized (ScrollView):</Text>
+      <View style={styles.limitedContainer}>
+        <ScrollView alwaysBounceVertical={false}>
+          {courseGoals.map((goal) => (
+            <GoalItem key={goal.key} text={goal.text} />
+          ))}
+        </ScrollView>
       </View>
 
     </View>
@@ -50,22 +58,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: '#f4f4f8',
   },
-  headerContainer: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  headerText: {
-    fontSize: 24,
+  sectionTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5,
     color: '#333',
   },
-  goalsContainer: {
-    flex: 5,
-  },
-  listHeader: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#555',
-    marginBottom: 10,
+  limitedContainer: {
+    height: 150, // ILO1: Limiting the size of the container
+    borderWidth: 2,
+    borderColor: '#cccccc',
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#ffffff',
+    marginBottom: 15,
   }
 });
